@@ -1,3 +1,4 @@
+import { resetUpgrade } from "./main.js";
 import { togglePowerUp } from "./powerup.js";
 import {
   currencies,
@@ -176,10 +177,13 @@ export const upgradeMethods = {
       },
       apply: (currentLvl, maxLvl) => {
         if (currentLvl <= maxLvl) {
-          const effectiveLevel = Math.max(0, currentLvl-1);
+          const effectiveLevel = Math.max(0, currentLvl - 1);
           mechanicMap.clicks.additiveBonus = effectiveLevel;
           console.log(effectiveLevel);
           console.log(mechanicMap.clicks);
+        }
+        if (currentLvl > maxLvl) {
+          resetUpgrade("clicks", "clicksPower");
         }
         if (currentLvl === maxLvl) return "last";
       },
@@ -191,8 +195,14 @@ export const upgradeMethods = {
       apply: (currentLvl, maxLvl) => {
         if (currentLvl <= maxLvl) {
           const effectiveLevel = Math.max(0, currentLvl);
-          mechanicMap.clicks.clickDelay = (mechanicMap.clicks.defaultClickDealy - (effectiveLevel * 200));
-          console.log(mechanicMap.clicks.defaultClickDealy - (effectiveLevel * 200));
+          mechanicMap.clicks.clickDelay =
+            mechanicMap.clicks.defaultClickDealy - effectiveLevel * 200;
+          console.log(
+            mechanicMap.clicks.defaultClickDealy - effectiveLevel * 200,
+          );
+        }
+        if (currentLvl > maxLvl) {
+          resetUpgrade("clicks", "fasterClick");
         }
         if (currentLvl === maxLvl) return "last";
       },
@@ -202,10 +212,14 @@ export const upgradeMethods = {
         return 1_000;
       },
       apply: (currentLevel, maxLvl) => {
-        if (currentLevel < maxLvl) {
+        console.log(currentLevel, maxLvl);
+        if (currentLevel <= maxLvl) {
           mechanicMap.clicks.critChance = 5;
         }
-        if (currentLevel + 1 === maxLvl) return "last";
+        if (currentLevel > maxLvl) {
+          resetUpgrade("clicks", "criticalClick");
+        }
+        if (currentLevel === maxLvl) return "last";
       },
     },
     criticalMultiplier: {
@@ -215,34 +229,46 @@ export const upgradeMethods = {
         );
       },
       apply: (currentLevel, maxLevel) => {
-        if (currentLevel < maxLevel) {
+        if (currentLevel <= maxLevel) {
           const effectiveLevel = Math.max(0, currentLevel - 1);
-          mechanicMap.clicks.critMultiplier += (effectiveLevel * 0.25);
+          mechanicMap.clicks.critMultiplier += effectiveLevel * 0.25;
         }
-        if (currentLevel + 1 === maxLevel) return "last";
+        if (currentLevel > maxLevel) {
+          resetUpgrade("clicks", "criticalMultiplier");
+        }
+        if (currentLevel === maxLevel) return "last";
       },
     },
     improvedCriticalChance: {
       cost: (currentLevel) => {
         return Math.round(3_000 * 1.25 ** (currentLevel - 1));
       },
-      apply: (currentLevel, maxLevel)  => {
-        const effectiveLevel = Math.max(0, currentLevel - 1);
-        mechanicMap.clicks.critChance += (effectiveLevel * 2);
-      }
+      apply: (currentLevel, maxLevel) => {
+        if (currentLevel <= maxLevel) {
+          const effectiveLevel = Math.max(0, currentLevel - 1);
+          mechanicMap.clicks.critChance += effectiveLevel * 2;
+        }
+        if (currentLevel > maxLevel) {
+          resetUpgrade("clicks", "improvedCriticalChance");
+        }
+        if (currentLevel === maxLevel) return "last";
+      },
     },
     powerup: {
-      cost: ()=> {
+      cost: () => {
         return 15_000;
       },
-      apply: (currentLevel, maxLevel)=>{
+      apply: (currentLevel, maxLevel) => {
         if (currentLevel < maxLevel) {
           mechanicMap.powerup.spawnDelay = 60_000;
           togglePowerUp();
         }
-        if (currentLevel + 1 === maxLevel) return "last";
-      }
-    }
+        if (currentLevel > maxLevel) {
+          resetUpgrade("clicks", "powerup");
+        }
+        if (currentLevel === maxLevel) return "last";
+      },
+    },
   },
 };
 
@@ -281,9 +307,9 @@ function purchaseUpgrade(upgradeType, upgrade, upgradeBox, button) {
     currentUpgrade.current += currentUpgrade.step;
     currentUpgrade.level += 1;
     const currentUpgradeApply = upgradeMethods[upgradeType][upgrade].apply(
-    currentUpgrade.level,
-    currentUpgrade.max,
-  );;
+      currentUpgrade.level,
+      currentUpgrade.max,
+    );
     const isMax = currentUpgradeApply;
 
     purchasedUpgrade[upgradeType] = purchasedUpgrade[upgradeType] || {};
@@ -335,13 +361,13 @@ export function getNextUpgrade(currencyType) {
 }
 
 export function reApplyUpgradeBuffs() {
-  Object.keys(purchasedUpgrade).forEach((upgradeCurrency) =>{
+  Object.keys(purchasedUpgrade).forEach((upgradeCurrency) => {
     Object.keys(purchasedUpgrade[upgradeCurrency]).forEach((upgradeDetail) => {
       const currentUpgrade = purchasedUpgrade[upgradeCurrency][upgradeDetail];
       const applyMethod = upgradeMethods[upgradeCurrency][upgradeDetail];
       const upgradeMax = upgrades[upgradeCurrency][upgradeDetail].max;
       applyMethod.apply(currentUpgrade.level, upgradeMax);
-    })
-  })
+    });
+  });
   console.log(mechanicMap);
 }
