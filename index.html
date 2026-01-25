@@ -1,23 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <button id="mainBtn">Click</button>
-    <div id="currencyContainer">
-        <!-- <div class="stat">
-            <p>Click:</p>
-            <p id="clickValue">0</p>
-        </div>
-        <div class="stat">
-            <p>Super Click:</p>
-            <p>0</p>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <span id="mainTitle">Idle Clicker Incremental</span>
+    <div id="mainBtnCont">
+      <button id="mainBtn">Click</button>
+      <div id="clickTimer"></div>
+    </div>
+    <div id="currencyContainer"></div>
+    <div id="upgradeContainer" class="hidden">
+      <div id="toogleBtn">
+        <span id="dash1"></span>
+        <span id="dash2"></span>
+      </div>
+      <div id="upgradePanels">
+        <div id="clickUpgrade" class="pannelBtn"></div>
+        <div id="superClickUpgrade" class="pannelBtn"></div>
+      </div>
+      <div id="header">
+        <p id="upgradePanelHeader">Clicker Upgrade</p>
+      </div>
+      <div id="upgrades">
+        <!-- <div class="upgradePlaceholder">
+          <img src="./assets/lock.png" alt="">
+          <div class="upgradeUnlockProgress"></div>
         </div> -->
+        <!-- <div class="upgradeBox">
+          <div class="label">Click power</div>
+          <div class="upgradeDetail">
+              <div class="textContainer">
+                <div class="description">Unlocks Reset Mechanism which provides permanent boosts.</div>
+                <div class="upgradeOverview">
+                  +1 => +2
+                </div>
+                <div class="price">Cost: 10 Clicks</div>
+              </div>
+              <div class="buttonContainer">
+                <div id="levelDescription">
+                  <span class="levelTxt">level</span>
+                  <span class="currentLvl">1/10</span>
+                </div>
+                <button class="upgradeBtn">Buy</button>
+              </div>
+          </div>
+        </div> -->
+      </div>
     </div>
     <script type="module" src="./js/main.js"></script>
-</body>
+  </body>
 </html>

@@ -1,40 +1,421 @@
 * {
-    margin: 0;
-    padding: 0;
-    font-family:sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  user-select: none;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+#mainTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 3rem;
+  font-weight: bold;
+  width: max-content;
+  top: 10px;
+  user-select: none;
+}
+
+#mainBtnCont {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #mainBtn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50% , -50%);
-    width: 100px;
-    height: 50px;
-    font-size: 20px;
-    font-weight: bold;
+  width: 100%;
+  height: 70%;
+
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+
+  color: #3b2f1e;
+  background: linear-gradient(145deg, #f7d27c, #e6b85c);
+  border: none;
+  border-radius: 18px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 0 #c59a3c,
+    0 10px 20px rgba(0, 0, 0, 0.25);
+
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    filter 0.08s ease;
+}
+
+#mainBtn:hover {
+  filter: brightness(1.05);
+}
+
+#mainBtn:active {
+  transform: translateY(6px);
+
+  box-shadow:
+    0 2px 0 #c59a3c,
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#clickTimer {
+  width: 0%;
+  height: 10%;
+  background: red;
+
+  border-radius: 50px;
+  transition: width 0.0001s linear;
+}
+
+#progressBar {
+  width: 40%;
+  min-width: 200px;
+  max-width: 400px;
+  height: 15px;
+  border: 2px solid black;
+  border-radius: 50px;
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #currencyContainer {
-    width: 150px;
-    height: 200px;
-    position: absolute;
-    bottom: 5px;
-    left: 5px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 4px;
-    overflow-y: auto;
+  width: 150px;
+  max-height: 200px;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  overflow-y: auto;
+  background: linear-gradient(to right, #9c9c9c, #e9e9e9);
+  border-radius: 10px;
+  padding: 8px;
+  color: #020000;
+  font-weight: bold;
 }
 
-#currencyContainer p{
-    font-size: 20px;
+#currencyContainer p {
+  font-size: 20px;
 }
 
 .stat {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#upgradeContainer {
+  width: 400px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  background: linear-gradient(
+    180deg,
+    rgba(240, 240, 240, 0.95),
+    rgba(210, 210, 210, 0.95)
+  );
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+  transform: translateX(0%);
+  transition: transform 0.5s ease;
+}
+
+#upgradeContainer.hidden {
+  transform: translateX(100%);
+}
+
+#upgradeContainer.hidden #dash1 {
+  transform: rotateZ(0deg);
+}
+
+#upgradeContainer.hidden #dash2 {
+  transform: rotateZ(0deg);
+}
+
+#upgradeContainer:not(.hidden) #dash1 {
+  transform: rotateZ(45deg);
+}
+
+#upgradeContainer:not(.hidden) #dash2 {
+  transform: rotateZ(-45deg);
+  position: absolute;
+}
+
+#toogleBtn {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  bottom: 0;
+  left: -60px;
+  background: #cdcdcd8c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  border-radius: 8px 0 0px 8px;
+}
+
+#dash1,
+#dash2 {
+  width: 42px;
+  height: 8px;
+  background: black;
+  border-radius: 5px;
+  transform: rotateZ(0deg);
+}
+
+#upgradePanels {
+  width: 100%;
+  height: 60px;
+  /* background-color: aqua; */
+  display: flex;
+  gap: 5px;
+  padding: 5px 0 0 5px;
+}
+
+.pannelBtn {
+  width: 60px;
+  height: 60px;
+  background-color: antiquewhite;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+}
+
+#clickUpgrade {
+  background-image: url("./assets/click.png");
+  background-position: center;
+  background-size: 80%;
+  background-repeat: no-repeat;
+}
+
+#superClickUpgrade {
+  background-image: url("./assets/superClick.png");
+  background-position: center;
+  background-size: 80%;
+  background-repeat: no-repeat;
+}
+
+#header {
+  width: 100%;
+  height: 80px;
+  /* background-color: red; */
+  /* border-top: 3px solid black; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  /* background: #cdcdcd8c; */
+  border-radius: 10px 0 0 0;
+  background: linear-gradient(90deg, #e0e0e0, #cfcfcf);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+#upgrades {
+  width: 100%;
+  flex: 1;
+  padding: 5px 0 0 0;
+  background: #cdcdcd8c;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#upgrades::-webkit-scrollbar{
+  width: 4px;
+}
+
+#upgrades::-webkit-scrollbar-track{
+  width: 2px;
+  border-radius: 8px;
+}
+
+#upgrades::-webkit-scrollbar-thumb{
+  background: linear-gradient(to bottom, rgb(0, 238, 255), rgb(255, 0, 0), rgb(253, 0, 177));
+  border-radius: 8px;
+}
+
+.upgradeBox {
+  width: 95%;
+  height: 120px;
+  /* background: #ffffff; */
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  background: linear-gradient(180deg, #ffffff, #bfbfbf);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 54%);
+  margin-bottom: 10px;
+  padding-top: 5px;
+  transition: opacity 0.3s ease;
+  flex-shrink: 0;
+}
+
+.upgradeBox.canAfford {
+  background: linear-gradient(180deg, #3aff06, #d7fdcd);
+}
+
+.upgradeBox.cantAfford {
+  background: linear-gradient(180deg, #ff0606, #fdcdcd);
+}
+
+.upgradeBox.max {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.upgradePlaceholder {
+  width: 95%;
+  height: 120px;
+  /* background: #ffffff; */
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  background: linear-gradient(180deg, #ffffff, #bfbfbf);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 54%);
+  overflow: hidden;
+  position: relative;
+}
+
+.upgradePlaceholder img {
+  width: 50px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* transition: ; */
+}
+
+.upgradePlaceholder .upgradeUnlockProgress {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #68686852, #898989);
+  transition: width 0.3s ease;
+}
+
+.upgradeBox .label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.upgradeDetail {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.upgradeDetail .textContainer {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.textContainer .description,
+.textContainer .upgradeOverview,
+.textContainer .price {
+  margin-left: 10px;
+}
+
+.upgradeBox .buttonContainer {
+  width: 29%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 1.1rem;
+}
+
+.buttonContainer .price {
+  width: 100%;
+  height: 30%;
+}
+
+.buttonContainer button {
+  width: 80%;
+  height: 50%;
+  background: linear-gradient(#ffd966, #e6b800);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: white;
+  text-shadow: 3px 3px 1px #000000;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.buttonContainer button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.buttonContainer button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.buttonContainer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: translateY(0px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 470px) {
+  html {
+    overflow: hidden;
+  }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #mainTitle {
+    font-size: 1.6rem;
+  }
+
+  #upgradeContainer {
+    width: 300px;
+    height: 100vh;
+    transform: translateX(0);
+    max-height: 100dvh;
+  }
+
+  #upgradeContainer.hidden {
+    /* right: -300px; */
+    transform: translateX(100%);
+  }
 }
