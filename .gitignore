@@ -7,3 +7,5 @@ Thumbs.db
 
 # Ignore node_modules if you ever add packages
 node_modules/
+
+audios

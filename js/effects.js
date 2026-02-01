@@ -1,8 +1,10 @@
+import { updatePowerupsTimer } from "./powerup.js";
 import { getPointOnCurve, objectLerp } from "./utils.js";
 
 let canvas, ctx;
 let p0, p1, p2;
 let lastTime = performance.now();
+
 
 const gainTexts = [];
 
@@ -20,6 +22,7 @@ export function intiEffectCanvas() {
 
   document.body.appendChild(canvas);
   ctx = canvas.getContext("2d");
+  updateBezelCurve();
   render();
 }
 
@@ -28,16 +31,19 @@ export function getCtx() {
 }
 
 export function resizeCanvas() {
-
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
+  updateBezelCurve();
 }
 
-export function createBezelCurve() {
+function updateBezelCurve(){
   p0 = { x: canvas.width / 2, y: canvas.height / 2 - 30 };
   p1 = { x: canvas.width / 2, y: -100 };
   p2 = { x: 130, y: canvas.height - 40 };
+}
+
+export function createBezelCurve() {
 
   ctx.beginPath();
   ctx.moveTo(p0.x, p0.y);
@@ -50,7 +56,7 @@ export function createBezelCurve() {
     ctx.lineTo(point.x, point.y);
   }
 
-    ctx.stroke();
+  ctx.stroke();
 
   [p0, p1, p2].forEach((p) => {
     ctx.fillStyle = "blue";
@@ -65,9 +71,10 @@ export function spawnGainText(text, size, color) {
 }
 
 function render(now) {
+  const deltaTime = Math.min((now - lastTime) / 1000, 0.05);
+  lastTime = now;
 
-    const deltaTime = Math.min((now - lastTime) / 1000, 0.05);
-    lastTime = now;
+  updatePowerupsTimer(deltaTime);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // createBezelCurve();

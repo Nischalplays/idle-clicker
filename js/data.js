@@ -16,32 +16,33 @@ export function loadCurrencyData(currencies) {
   });
 }
 
-export function saveUpgradesData(){
-    localStorage.setItem("purchasedUpgrades", JSON.stringify(purchasedUpgrade));
+export function saveUpgradesData() {
+  localStorage.setItem("purchasedUpgrades", JSON.stringify(purchasedUpgrade));
 }
 
-export function loadUpgradeData(){
+export function loadUpgradeData() {
   const data = JSON.parse(localStorage.getItem("purchasedUpgrades"));
-  if(!data) return;
+  if (!data) return;
 
-  console.log(data);
-  Object.keys(data).forEach((upgradeCurrency)=>{
+  Object.keys(data).forEach((upgradeCurrency) => {
     Object.keys(data[upgradeCurrency]).forEach((upgradeType) => {
-      purchasedUpgrade[upgradeCurrency] = purchasedUpgrade[upgradeCurrency] || {};
-      purchasedUpgrade[upgradeCurrency][upgradeType] = data[upgradeCurrency][upgradeType];
-    })
-  })
+      purchasedUpgrade[upgradeCurrency] =
+        purchasedUpgrade[upgradeCurrency] || {};
+      purchasedUpgrade[upgradeCurrency][upgradeType] =
+        data[upgradeCurrency][upgradeType];
+    });
+  });
 
   Object.keys(purchasedUpgrade).forEach((upgradeCurrency) => {
     Object.keys(purchasedUpgrade[upgradeCurrency]).forEach((upgradeType) => {
       const upgardeData = upgrades[upgradeCurrency]?.[upgradeType];
-      if(!upgardeData) return;
+      if (!upgardeData) return;
       const purchasedData = purchasedUpgrade[upgradeCurrency][upgradeType];
       upgardeData.level = purchasedData.level;
       upgardeData.current = purchasedData.current;
       upgardeData.displaying = purchasedData.displaying;
-    })
-  })
+    });
+  });
   reApplyUpgradeBuffs();
 }
 
@@ -53,7 +54,7 @@ export function startSaveInterval() {
   }, 2000);
 }
 
-export function saveData(){
+export function saveData() {
   saveCurrency(currencies);
   saveUpgradesData();
 }

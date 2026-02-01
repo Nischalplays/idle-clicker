@@ -9,6 +9,37 @@ html {
   overflow-x: hidden;
 }
 
+#resetButton {
+  cursor: pointer;
+  width: 70px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  background: red;
+  border-radius: 10px;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-weight: bold;
+  box-shadow:
+    0 8px 0 #bf0000,
+    0 10px 20px rgba(0, 0, 0, 0.25);
+  border: none;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    filter 0.08s ease;
+  /* transform: translateY(6px); */
+}
+
+#resetButton:active {
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 #bf0000,
+    0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
 #mainTitle {
   position: absolute;
   left: 50%;
@@ -200,7 +231,16 @@ html {
   cursor: pointer;
 }
 
-#clickUpgrade {
+#upgradesHolder {
+  width: 100%;
+  flex: 1;
+  padding: 5px 0 0 0;
+  background: linear-gradient(90deg, #bdbdbd, #4b4b4b);
+  display: flex;
+  overflow-y: auto;
+}
+
+#clicksUpgrade {
   background-image: url("./assets/click.png");
   background-position: center;
   background-size: 80%;
@@ -226,32 +266,40 @@ html {
   font-weight: bold;
   /* background: #cdcdcd8c; */
   border-radius: 10px 0 0 0;
-  background: linear-gradient(90deg, #e0e0e0, #cfcfcf);
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  background: linear-gradient(90deg, #bdbdbd, #4b4b4b);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.196);
+  color: white;
 }
 
-#upgrades {
+.upgrades.active {
   width: 100%;
-  flex: 1;
   padding: 5px 0 0 0;
-  background: #cdcdcd8c;
   display: flex;
   align-items: center;
   flex-direction: column;
   overflow-y: auto;
 }
 
-#upgrades::-webkit-scrollbar{
+.upgrades.inActive {
+  display: none;
+}
+
+.upgrades::-webkit-scrollbar {
   width: 4px;
 }
 
-#upgrades::-webkit-scrollbar-track{
+.upgrades::-webkit-scrollbar-track {
   width: 2px;
   border-radius: 8px;
 }
 
-#upgrades::-webkit-scrollbar-thumb{
-  background: linear-gradient(to bottom, rgb(0, 238, 255), rgb(255, 0, 0), rgb(253, 0, 177));
+.upgrades::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    to bottom,
+    rgb(0, 238, 255),
+    rgb(255, 0, 0),
+    rgb(253, 0, 177)
+  );
   border-radius: 8px;
 }
 
@@ -287,10 +335,12 @@ html {
 .upgradePlaceholder {
   width: 95%;
   height: 120px;
+  margin-bottom: 10px;
   /* background: #ffffff; */
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   /* justify-content: space-between; */
   background: linear-gradient(180deg, #ffffff, #bfbfbf);
   box-shadow: 0 3px 6px rgb(0 0 0 / 54%);
@@ -393,6 +443,45 @@ html {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.powerupBtn {
+  width: 60px;
+  height: 60px;
+  background: #000000a8;
+  border-radius: 50%;
+  position: fixed;
+  top: 80px;
+  left: 80px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.powerupBtn img {
+  width: 70%;
+  height: 70%;
+}
+
+svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  width: 70px;
+  height: 70px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.despawnTimer {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset linear;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
 @media (max-width: 470px) {
   html {
     overflow: hidden;
@@ -417,5 +506,9 @@ html {
   #upgradeContainer.hidden {
     /* right: -300px; */
     transform: translateX(100%);
+  }
+
+  .upgradeBox .label {
+    font-size: 1.2rem;
   }
 }

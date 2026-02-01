@@ -1,3 +1,4 @@
+import { playsound, purchaseSoundEffect } from "./audio.js";
 import { resetUpgrade } from "./main.js";
 import { togglePowerUp } from "./powerup.js";
 import {
@@ -9,6 +10,7 @@ import {
 
 import {
   addClassList,
+  clickUpgradeCont,
   createUpgradeBox,
   disableMaxBtn,
   resetClassList,
@@ -115,9 +117,10 @@ export const upgrades = {
       description: "Unlocks new currency Super CLick and its upgrades.",
       cost: 150_0000,
       level: 0,
+      defaultLevel: 0,
       default: 0,
       current: 0,
-      unlockRequirement: 100_000,
+      unlockRequirement: 40_000,
       resetable: true,
       displaying: false,
       max: 1,
@@ -130,7 +133,7 @@ export const upgrades = {
       level: 0,
       default: 0,
       current: 0,
-      unlockRequirement: 1_000_000,
+      unlockRequirement: 50_000,
       resetable: false,
       displaying: false,
       max: 1,
@@ -230,7 +233,7 @@ export const upgradeMethods = {
       },
       apply: (currentLevel, maxLevel) => {
         if (currentLevel <= maxLevel) {
-          const effectiveLevel = Math.max(0, currentLevel - 1);
+          const effectiveLevel = Math.max(0, currentLevel);
           mechanicMap.clicks.critMultiplier += effectiveLevel * 0.25;
         }
         if (currentLevel > maxLevel) {
@@ -259,8 +262,9 @@ export const upgradeMethods = {
         return 15_000;
       },
       apply: (currentLevel, maxLevel) => {
-        if (currentLevel < maxLevel) {
-          mechanicMap.powerup.spawnDelay = 60_000;
+        if (currentLevel <= maxLevel) {
+          const effectiveLevel = Math.max(0, currentLevel);
+          mechanicMap.powerup.spawnDelay = effectiveLevel * 60000;
           togglePowerUp();
         }
         if (currentLevel > maxLevel) {
@@ -269,6 +273,19 @@ export const upgradeMethods = {
         if (currentLevel === maxLevel) return "last";
       },
     },
+    unlockSuperClick: {
+      cost: () => {return 40000},
+      apply: (currentLevel, maxLevel) => {
+        if (currentLevel <= maxLevel) {
+          
+          
+        }
+        if (currentLevel > maxLevel) {
+          resetUpgrade("clicks", "powerup");
+        }
+        if (currentLevel === maxLevel) return "last";
+      }
+    }
   },
 };
 
@@ -276,6 +293,9 @@ export const purchasedUpgrade = {};
 
 export function checkUnlockedUpgrade(upgradeCurrency) {
   const upgradeGroup = upgrades[upgradeCurrency];
+  
+  const currentPanel = document.getElementById(`${upgradeCurrency}Upgrades`);
+
   Object.keys(upgradeGroup).forEach((upgrade) => {
     const currentUpgrade = upgradeGroup[upgrade];
     if (
@@ -284,13 +304,13 @@ export function checkUnlockedUpgrade(upgradeCurrency) {
       !currentUpgrade.displaying
     ) {
       currentUpgrade.displaying = true;
-      createUpgradeBox(currentUpgrade, upgradeCurrency, upgrade);
+      createUpgradeBox(currentUpgrade, upgradeCurrency, upgrade, currentPanel);
     } else if (currentUpgrade.displaying) {
-      const alreadyAdded = upgradeContainer.querySelector(
+      const alreadyAdded = currentPanel.querySelector(
         `.upgradeBtn[data-upgrade="${upgrade.trim()}"]`,
       );
       if (alreadyAdded) return;
-      createUpgradeBox(currentUpgrade, upgradeCurrency, upgrade);
+      createUpgradeBox(currentUpgrade, upgradeCurrency, upgrade, currentPanel);
     }
   });
 }
@@ -303,6 +323,7 @@ function purchaseUpgrade(upgradeType, upgrade, upgradeBox, button) {
   );
   let currentCurrency = currencies[upgradeType].resetable.current;
   if (currentCurrency >= currenctUpgradePrice) {
+    playsound(purchaseSoundEffect);
     currencies[upgradeType].resetable.current -= currenctUpgradePrice;
     currentUpgrade.current += currentUpgrade.step;
     currentUpgrade.level += 1;
@@ -343,6 +364,7 @@ export function addUpgradeEventListener(upgradeBox, element) {
       upgradeBox,
       element,
     );
+    
   });
 }
 
@@ -369,5 +391,4 @@ export function reApplyUpgradeBuffs() {
       applyMethod.apply(currentUpgrade.level, upgradeMax);
     });
   });
-  console.log(mechanicMap);
 }

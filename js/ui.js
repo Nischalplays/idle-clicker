@@ -5,55 +5,114 @@ import {
   upgradeMethods,
 } from "./upgrades.js";
 import { spawnGainText } from "./effects.js";
+import { clickAudio, clickAudio1, playsound } from "./audio.js";
 
 const currencyValueElement = {};
+const currencyContainer = document.getElementById("currencyContainer");
 
-const upgradesCont = document.getElementById("upgrades");
+export const clickUpgradeCont = document.getElementById("clicksUpgrades");
 export let emptyBox = "";
 
 export function generateCurrencyUI() {
-  const currencyContainer = document.getElementById("currencyContainer");
   Object.keys(currencies).forEach((key) => {
     if (currencies[key].unlocked === true) {
-      const cont = document.createElement("div");
-      const label = document.createElement("p");
-      const value = document.createElement("p");
-
-      cont.classList.add("stat");
-      label.textContent = currencies[key].label;
-      value.textContent = currencies[key].resetable.current;
-      value.id = `${key}Value`;
-
-      cont.appendChild(label);
-      cont.appendChild(value);
-      currencyContainer.appendChild(cont);
-
-      currencyValueElement[key] = value;
+      addCurrencyText(key);
     }
   });
+}
+
+export function generateUpgradesContainer() {
+  const upgradePanel = document.getElementById("upgradePanels");
+  const upgradesHolder = document.getElementById("upgradesHolder");
+
+  Object.keys(currencies).forEach((currency) => {
+    // adding upgrade Panel Buttons
+    if (currencies[currency].unlocked) {
+      const panelButtion = document.createElement("div");
+      panelButtion.id = `${currency}Upgrade`;
+      panelButtion.classList.add("pannelBtn");
+
+      addUpgradePanelEventListener(
+        "click",
+        panelButtion,
+        `${panelButtion.id}s`,
+      );
+      upgradePanel.appendChild(panelButtion);
+
+      //adding upgradesBox in relative container
+      const panel = document.createElement("div");
+      panel.id = `${currency}Upgrades`;
+      if (currency === "clicks") {
+        panel.classList.add("upgrades");
+        panel.classList.add("active");
+      } else {
+        panel.classList.add("upgrades");
+        panel.classList.add("inActive");
+      }
+
+      upgradesHolder.appendChild(panel);
+      checkUnlockedUpgrade(currency);
+    }
+  });
+}
+
+function addUpgradePanelEventListener(eventType, element, upgradesElementId) {
+  element.addEventListener(eventType, () => {
+    const currentUpgradePanel = document.getElementById(upgradesElementId);
+    if (currentUpgradePanel.classList.contains("active")) return;
+    document.querySelectorAll(".upgrades").forEach((upgrade) => {
+      upgrade.classList.remove("active");
+    });
+    currentUpgradePanel.classList.add("active");
+  });
+}
+
+export function addCurrencyText(currencyType) {
+
+  const cont = document.createElement("div");
+  const label = document.createElement("p");
+  const value = document.createElement("p");
+
+  cont.classList.add("stat");
+  label.textContent = currencies[currencyType].label;
+  value.textContent = currencies[currencyType].resetable.current;
+  value.id = `${currencyType}Value`;
+
+  cont.appendChild(label);
+  cont.appendChild(value);
+  currencyValueElement[currencyType] = value;
+  currencyContainer.appendChild(cont);
 }
 
 export function addCurrency(currencyType) {
   const mechanic = mechanicMap[currencyType];
   const currency = currencies[currencyType];
 
+  let isCrit = false;
+
   let gain =
-    (mechanic.baseClick + mechanic.additiveBonus) * mechanic.resetMultiplier;
+    (mechanic.baseClick + mechanic.additiveBonus) *
+    mechanic.resetMultiplier *
+    mechanic.clickMultiplier;
   let size = 18;
-  let color = "black"
+  let color = "black";
   if (mechanic.critChance > 0) {
     if (Math.random() * 100 < mechanic.critChance) {
-      console.log("critical click");
+      playsound(clickAudio);
       gain *= mechanic.critMultiplier;
       size = 22;
       color = "red";
+      isCrit = true;
     }
   }
+
+  if (!isCrit) playsound(clickAudio1);
+
   spawnGainText(`+${gain} ${currencyType}`, size, color);
   updateClickTimer(mechanic.clickDelay);
   setTimeout(() => {
     currency.resetable.current += gain;
-  
+
     updateUi(currencyType);
   }, 1400);
 }
@@ -83,7 +142,12 @@ export function toggleUpgradePanel(container) {
   container.classList.toggle("hidden");
 }
 
-export function createUpgradeBox(upgradeDetails, currency, upgradeKey) {
+export function createUpgradeBox(
+  upgradeDetails,
+  currency,
+  upgradeKey,
+  panelToAppend,
+) {
   const upgradeBox = document.createElement("div");
   const label = document.createElement("div");
   const upgradeDetail = document.createElement("div");
@@ -120,8 +184,7 @@ export function createUpgradeBox(upgradeDetails, currency, upgradeKey) {
   ) {
     upgradeBox.dataset.max = false;
     upgradeBox.classList.add("canAfford");
-  }
-  else{
+  } else {
     upgradeBox.dataset.max = false;
     upgradeBox.classList.add("cantAfford");
   }
@@ -132,12 +195,11 @@ export function createUpgradeBox(upgradeDetails, currency, upgradeKey) {
   if (upgradeDetails.unit === "sec") {
     upgradeOverView.textContent = `${upgradeDetails.current / 1000}${upgradeDetails.unit} => 
         ${(upgradeDetails.current + upgradeDetails.step) / 1000}${upgradeDetails.unit}`;
-  } else if(upgradeDetails.unit === "oneTime"){
+  } else if (upgradeDetails.unit === "oneTime") {
     console.log("hello");
     upgradeOverView.textContent = `${upgradeDetails.current} => 
         ${upgradeDetails.step}`;
-  } 
-  else {
+  } else {
     upgradeOverView.textContent = `${upgradeDetails.current}${upgradeDetails.unit} => 
         ${upgradeDetails.current + upgradeDetails.step}${upgradeDetails.unit}`;
   }
@@ -168,11 +230,11 @@ export function createUpgradeBox(upgradeDetails, currency, upgradeKey) {
   levelDescription.appendChild(levelTxt);
   levelDescription.appendChild(currentLvl);
 
-  upgradesCont.appendChild(upgradeBox);
+  panelToAppend.appendChild(upgradeBox);
 
   const oldEmptyBox = document.querySelector(".upgradePlaceholder");
   deleteOldEmptyBox(oldEmptyBox);
-  displayEmptyUpgradeBox();
+  displayEmptyUpgradeBox(panelToAppend);
 }
 
 export function updateUpgradeBox(
@@ -201,26 +263,31 @@ export function updateUpgradeBox(
 }
 
 export function updateUpgradeBoxState(currencyValue, cost) {
-  upgradesCont.querySelectorAll(".upgradeBox").forEach((box) => {
-    if (box.classList.contains("max")) return;
-    const cost = Number(box.querySelector(".price").textContent.split(" ")[0]);
-    if (currencyValue >= cost) {
-      box.classList.add("canAfford");
-      box.classList.remove("cantAfford");
-    } else {
-      box.classList.add("cantAfford");
-      box.classList.remove("canAfford");
-    }
+  document.querySelectorAll(".upgrades").forEach((upgradePanel) => {
+    upgradePanel.querySelectorAll(".upgradeBox").forEach((box) => {
+      if (box.classList.contains("max")) return;
+      const cost = Number(
+        box.querySelector(".price").textContent.split(" ")[0],
+      );
+      if (currencyValue >= cost) {
+        box.classList.add("canAfford");
+        box.classList.remove("cantAfford");
+      } else {
+        box.classList.add("cantAfford");
+        box.classList.remove("canAfford");
+      }
+    });
   });
 }
 
 export function disableMaxBtn(btn, element) {
   btn.textContent = "Maxed";
   btn.disabled = true;
+  console.log(element);
   element.dataset.max = true;
 }
 
-function displayEmptyUpgradeBox() {
+function displayEmptyUpgradeBox(boxToAppend) {
   const box = document.createElement("div");
   box.classList.add("upgradePlaceholder");
 
@@ -233,7 +300,7 @@ function displayEmptyUpgradeBox() {
 
   box.appendChild(progressBar);
   box.appendChild(image);
-  upgradesCont.appendChild(box);
+  boxToAppend.appendChild(box);
   emptyBox = progressBar;
 }
 

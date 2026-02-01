@@ -8,6 +8,9 @@
   </head>
   <body>
     <span id="mainTitle">Idle Clicker Incremental</span>
+
+    <button id="resetButton">Reset</button>
+
     <div id="mainBtnCont">
       <button id="mainBtn">Click</button>
       <div id="clickTimer"></div>
@@ -18,37 +21,11 @@
         <span id="dash1"></span>
         <span id="dash2"></span>
       </div>
-      <div id="upgradePanels">
-        <div id="clickUpgrade" class="pannelBtn"></div>
-        <div id="superClickUpgrade" class="pannelBtn"></div>
-      </div>
+      <div id="upgradePanels"></div>
       <div id="header">
         <p id="upgradePanelHeader">Clicker Upgrade</p>
       </div>
-      <div id="upgrades">
-        <!-- <div class="upgradePlaceholder">
-          <img src="./assets/lock.png" alt="">
-          <div class="upgradeUnlockProgress"></div>
-        </div> -->
-        <!-- <div class="upgradeBox">
-          <div class="label">Click power</div>
-          <div class="upgradeDetail">
-              <div class="textContainer">
-                <div class="description">Unlocks Reset Mechanism which provides permanent boosts.</div>
-                <div class="upgradeOverview">
-                  +1 => +2
-                </div>
-                <div class="price">Cost: 10 Clicks</div>
-              </div>
-              <div class="buttonContainer">
-                <div id="levelDescription">
-                  <span class="levelTxt">level</span>
-                  <span class="currentLvl">1/10</span>
-                </div>
-                <button class="upgradeBtn">Buy</button>
-              </div>
-          </div>
-        </div> -->
+      <div id="upgradesHolder">
       </div>
     </div>
     <script type="module" src="./js/main.js"></script>
