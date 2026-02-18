@@ -1,4 +1,5 @@
 import { playsound, purchaseSoundEffect } from "./audio.js";
+import { saveUpgradesData } from "./data.js";
 import { resetUpgrade } from "./main.js";
 import { togglePowerUp } from "./powerup.js";
 import {
@@ -7,6 +8,7 @@ import {
   getRequirementValue,
   mechanicMap,
 } from "./stats.js";
+import { unlockSuperClicks } from "./superClick.js";
 
 import {
   addClassList,
@@ -46,7 +48,7 @@ export const upgrades = {
       current: 2000,
       step: -200,
       unit: "sec",
-      unlockRequirement: 2,
+      unlockRequirement: 50,
       resetable: true,
       displaying: false,
       max: 5,
@@ -115,11 +117,11 @@ export const upgrades = {
       requirement: "clicks",
       label: "Unlock Super Click.",
       description: "Unlocks new currency Super CLick and its upgrades.",
-      cost: 150_0000,
       level: 0,
       defaultLevel: 0,
-      default: 0,
-      current: 0,
+      default: "locked",
+      current: "locked",
+      step: "unlocked",
       unlockRequirement: 40_000,
       resetable: true,
       displaying: false,
@@ -133,7 +135,7 @@ export const upgrades = {
       level: 0,
       default: 0,
       current: 0,
-      unlockRequirement: 50_000,
+      unlockRequirement: 500_000,
       resetable: false,
       displaying: false,
       max: 1,
@@ -167,6 +169,82 @@ export const upgrades = {
       max: 5,
     },
   },
+  superClick: {
+    betterClickPower: {
+      requirement: "superClick",
+      label: "Better Click Power",
+      description: "Increase Click gain by +5",
+      level: 0,
+      defaultLevel: 0,
+      default: 10,
+      current: 10,
+      step: 5,
+      unit: "",
+      unlockRequirement: 0,
+      resetable: true,
+      displaying: false,
+      max: 10,
+    },
+    unlockOfflineGain: {
+      requirement: "superClick",
+      label: "Unlock Offline Gain",
+      description: "Finally start earning when not online. Debuff -75% of total gain.",
+      cost: 50,
+      level: 0,
+      defaultLevel: 0,
+      default: "locked",
+      current: "locked",
+      step: "unlocked",
+      unlockRequirement: 40,
+      resetable: true,
+      displaying: false,
+      max: 1,
+    },
+    offlineGainTime: {
+      requirement: "superClick",
+      label: "More offline Time",
+      description: "Increase offlien gain time by 30 min",
+      cost: 60,
+      level: 1,
+      defaultLevel: 1,
+      current: 30,
+      default: 30,
+      step: 30,
+      unlockRequirement: 40,
+      resetable: true,
+      displaying: false,
+      max: 5
+    },
+    bonusRoll: {
+      requirement: "superClick",
+      label: "RNG Bonus Roll",
+      description: "Have 50% chance for x2 SC Gain",
+      cost: 100,
+      level: 0,
+      defaultLevel: 0,
+      current: 0,
+      default: 0,
+      step: 1,
+      unlockRequirement: 99,
+      resetable: true,
+      displaying: false,
+      max: 3
+    },
+    moreSc: {
+      requirement: "superClick",
+      label: "Increase super Click gain by 1",
+      cost: 150,
+      level: 1,
+      defaultLevel: 1,
+      current: 1,
+      default: 1,
+      step: 1,
+      unlockRequirement: 110,
+      resetable: true,
+      displaying: false,
+      max: 10
+    }
+  }
 };
 
 const upgradeContainer = document.getElementById("upgrades");
@@ -181,9 +259,7 @@ export const upgradeMethods = {
       apply: (currentLvl, maxLvl) => {
         if (currentLvl <= maxLvl) {
           const effectiveLevel = Math.max(0, currentLvl - 1);
-          mechanicMap.clicks.additiveBonus = effectiveLevel;
-          console.log(effectiveLevel);
-          console.log(mechanicMap.clicks);
+            mechanicMap.clicks.baseAdditiveBonus = effectiveLevel;
         }
         if (currentLvl > maxLvl) {
           resetUpgrade("clicks", "clicksPower");
@@ -274,11 +350,13 @@ export const upgradeMethods = {
       },
     },
     unlockSuperClick: {
-      cost: () => {return 40000},
+      cost: () => {
+        return 40000
+      },
       apply: (currentLevel, maxLevel) => {
         if (currentLevel <= maxLevel) {
-          
-          
+          // console.log("hello");
+          unlockSuperClicks();
         }
         if (currentLevel > maxLevel) {
           resetUpgrade("clicks", "powerup");
@@ -287,9 +365,40 @@ export const upgradeMethods = {
       }
     }
   },
+  superClick: {
+    betterClickPower: {
+      cost: (currentLevel) => {
+        return Math.round(10 * 1.3 ** currentLevel)
+      },
+      apply: (currentLevel, maxLevel) => {
+        if(currentLevel <= maxLevel){
+          const effectiveLevel = Math.max(0, currentLevel);
+          mechanicMap.clicks.superClickBonus = 5 * effectiveLevel;
+        }
+      }
+    },
+    unlockOfflineGain: {
+      cost: () => {
+        return 50;
+      },
+      apply: (currentLevel, maxLevel) => {
+        if(currentLevel <= maxLevel){
+          const effectiveLevel = Math.max(0, currentLevel);
+          mechanicMap.clicks.superClickBonus = 5 * effectiveLevel;
+        }
+      }
+    }
+  }
 };
 
 export const purchasedUpgrade = {};
+
+export function resetPurchasedUpgrades(){
+  Object.keys(purchasedUpgrade).forEach(upgradeType => {
+    delete purchasedUpgrade[upgradeType];
+  });
+  saveUpgradesData();
+}
 
 export function checkUnlockedUpgrade(upgradeCurrency) {
   const upgradeGroup = upgrades[upgradeCurrency];

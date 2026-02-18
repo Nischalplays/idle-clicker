@@ -46,6 +46,39 @@ export function loadUpgradeData() {
   reApplyUpgradeBuffs();
 }
 
+export function saveOfflineTime(){
+  localStorage.setItem("lastOffline", Date.now());
+}
+
+export function loadOfflineTime(){
+  const data = localStorage.getItem("lastOffline");
+  if(!data) return null;
+
+  const t = Number(data);
+  return Number.isFinite(t)? t : null;; 
+}
+
+export function savePendingOfflineGain(arr){
+  localStorage.setItem("PendingOfflineEarned", JSON.stringify(arr));
+}
+
+export function getPendingOfflineGain(){
+  const data = localStorage.getItem("PendingOfflineEarned");
+
+  if(!data) return null;
+  try{
+    const arr = JSON.parse(data);
+    return Array.isArray(arr) ? arr : null;
+  }
+  catch{
+    return null;
+  }
+}
+
+export function clearPendingOfflineGain(){
+  localStorage.removeItem("PendingOfflineEarned");
+}
+
 export function startSaveInterval() {
   if (startInterval) return;
   startInterval = setInterval(() => {
@@ -57,4 +90,11 @@ export function startSaveInterval() {
 export function saveData() {
   saveCurrency(currencies);
   saveUpgradesData();
+}
+
+export function resetData(){
+  clearInterval(startInterval);
+  console.log(purchasedUpgrade);
+  localStorage.removeItem("currencies");
+  localStorage.removeItem("purchasedUpgrades");
 }

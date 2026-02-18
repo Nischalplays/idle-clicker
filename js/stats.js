@@ -17,20 +17,44 @@ export const currencies = {
     },
     totalGained: 0,
     totalSpent: 0,
-    unlocked: true ,
+    unlocked: false,
   },
 };
+
+export const defaultcurrencies = {
+  clicks: {
+    label: "Clicks",
+    resetable: {
+      current: 0,
+      spent: 0,
+    },
+    totalGained: 0,
+    totalSpent: 0,
+    unlocked: true,
+  },
+  superClick: {
+    label: "Super Click",
+    resetable: {
+      current: 0,
+      spent: 0,
+    },
+    totalGained: 0,
+    totalSpent: 0,
+    unlocked: false,
+  },
+}
 
 export const playerStats = {
   resetLevel: 0,
   offlineEarning: false,
-  offlineEarningDuration: 0,
+  offlineEarningDuration: 30 * 60_000,
   offlineEarningPercentage: 25,
 };
 
 const clickStats = {
   baseClick: 1,
-  additiveBonus: 0, // from click power + SC upgrades
+  baseAdditiveBonus: 0, // from click power 
+  superClickBonus: 0,
   critChance: 0, // %
   clickMultiplier: 1,
   critMultiplier: 1.5,
@@ -41,13 +65,13 @@ const clickStats = {
 
 const superClickStats = {
   baseClick: 1,
-  additiveBonus: 0,
+  baseAdditiveBonus: 0,
   critChance: 0,
   clickMultiplier: 1,
   critMultiplier: 1,
   resetMultiplier: 1, // from reset
-  gainChance: 5,
-  offlineEarningChange: 5,
+  gainChance: 10,
+  scGainPerProc: 1,
 };
 
 const powerupStats = {
@@ -78,8 +102,7 @@ export function getRequirementValue(requirement) {
   if (currencies[requirement]) {
     return currencies[requirement].resetable.current;
   }
-
-  if (playerStats[requirement] !== undefined) {
+  else if (playerStats[requirement] !== undefined) {
     return playerStats[requirement];
   }
 

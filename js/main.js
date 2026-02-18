@@ -12,20 +12,24 @@ import {
   checkUnlockedUpgrade,
   getNextUpgrade,
   purchasedUpgrade,
+  resetPurchasedUpgrades,
   upgrades,
 } from "./upgrades.js";
-import { currencies, mechanicMap, resetCurrency } from "./stats.js";
+import { currencies, defaultcurrencies, mechanicMap, resetCurrency } from "./stats.js";
 import {toggleUpgradePanel } from "./ui.js";
 import {
   loadCurrencyData,
   loadUpgradeData,
+  resetData,
   saveCurrency,
   saveData,
+  saveOfflineTime,
   startSaveInterval,
 } from "./data.js";
 import { getCtx, intiEffectCanvas, createBezelCurve, resizeCanvas, spawnGainText } from "./effects.js";
 import { spawnPowerUp } from "./powerup.js";
-import { memeClickSound } from "./audio.js";
+import { getOfflineGain } from "./offline.js";
+// import { memeClickSound } from "./audio.js";
 
 let canClickMainBtn = true;
 
@@ -36,13 +40,16 @@ const resetBtn = document.getElementById("resetButton");
 
 resetBtn.addEventListener("click", ()=> {
   Object.keys(currencies).forEach((currency) => {
-    resetCurrency(currency);
+    currencies[currency] = defaultcurrencies[currency];
   })
   Object.keys(upgrades).forEach((upgradeCurrency) => {
     Object.keys(upgrades[upgradeCurrency]).forEach((upgradeType) => {
       resetUpgrade(upgradeCurrency, upgradeType);
     })
   })
+  resetData();
+  resetPurchasedUpgrades();
+
   location.reload();
 })
 
@@ -53,20 +60,18 @@ document.addEventListener("contextmenu", (e) => {
 document.addEventListener("DOMContentLoaded", () => {
   startSaveInterval();
   loadCurrencyData(currencies);
-  loadUpgradeData();
-
-  //event listening Dom Elements
   generateCurrencyUI();
+  loadUpgradeData();
   generateUpgradesContainer();
-  // checkUnlockedUpgrade("clicks");
-
+  getOfflineGain();
+  
+  //event listening Dom Elements
   mainBtn.addEventListener("click", () => {
     if (!canClickMainBtn) return;
 
     canClickMainBtn = false;
     onClickMainButton();
     isSuperClick();
-    // doReset();
     setTimeout(() => {
       canClickMainBtn = true;
     }, mechanicMap.clicks.clickDelay);
@@ -102,13 +107,21 @@ document.addEventListener("touchstart", (e) => {
 
 window.addEventListener("offline", () => {
   saveData();
+  saveOfflineTime();
 });
 window.addEventListener("beforeunload", () => {
   console.log("page reloading.");
   saveData();
+  saveOfflineTime();
 });
+
 window.addEventListener("resize", resizeCanvas);
 
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "hidden"){
+    saveOfflineTime();
+  }
+})
 
 function onClickMainButton() {
 // clickAudio.currentTime = 0;
@@ -122,8 +135,6 @@ function onClickMainButton() {
 // sound.play();
 
   addCurrency("clicks");
-  checkUnlockedUpgrade("clicks");
-  updateUpgradeBoxState(currencies.clicks.resetable.current);
   const nextUpgrade = getNextUpgrade("clicks");
   if (nextUpgrade)
     updateEmptyUpgradeBox(
@@ -139,7 +150,7 @@ createBezelCurve();
 //=============== inspect window helper functions =================//
 
 export function giveCurency(currencyType, amount) {
-  if (amount > 15000) amount = 15000;
+  if (amount > 50000) amount = 50000;
   currencies[currencyType].resetable.current = amount;
   updateUi("clicks");
 }
@@ -152,14 +163,6 @@ export function resetUpgrade(upgradeCurrency, upgradeName) {
     upgrades[upgradeCurrency][upgradeName].defaultLevel;
   upgrades[upgradeCurrency][upgradeName].current =
     upgrades[upgradeCurrency][upgradeName].defaultLevel;
-  
-    if(purchasedUpgrade[upgradeCurrency]?.[upgradeName]){
-      purchasedUpgrade[upgradeCurrency][upgradeName].level =
-        upgrades[upgradeCurrency][upgradeName].defaultLevel;
-      purchasedUpgrade[upgradeCurrency][upgradeName].current =
-        upgrades[upgradeCurrency][upgradeName].default;
-      console.log(upgrades[upgradeCurrency]);
-    }
 }
 
 export function showCurrencies(){

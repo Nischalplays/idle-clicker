@@ -1,5 +1,5 @@
 import { currencies, mechanicMap } from "./stats.js";
-import { addCurrency, addCurrencyText } from "./ui.js";
+import { addCurrency, addCurrencyText, generateCurrencyUI, generateUpgradesContainer } from "./ui.js";
 
 export function isSuperClick() {
   if (!currencies.superClick.unlocked) return;
@@ -17,7 +17,6 @@ export function isSuperClick() {
 
 export function unlockSuperClicks(){
   currencies.superClick.unlocked = true;
-  addCurrencyText("superClick");
-  
-
+  generateCurrencyUI();
+  generateUpgradesContainer();
 }
