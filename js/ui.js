@@ -105,7 +105,6 @@ export function addCurrency(currencyType) {
     (mechanic.baseClick + mechanic.baseAdditiveBonus + (mechanic.superClickBonus || 0)) *
     mechanic.resetMultiplier *
     mechanic.clickMultiplier;
-    console.log(gain);
   let size = 18;
   let color = "black";
   if (mechanic.critChance > 0) {
@@ -304,7 +303,7 @@ function displayEmptyUpgradeBox(boxToAppend) {
   box.classList.add("upgradePlaceholder");
 
   const image = document.createElement("img");
-  image.src = "../assets/lock.png";
+  image.src = new URL("../assets/lock.png", import.meta.url).href;
   image.classList.add("emptyBoxStatus");
 
   const progressBar = document.createElement("div");

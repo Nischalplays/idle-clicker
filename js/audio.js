@@ -17,10 +17,10 @@
 //     new Audio("../audios/audio16.mp3"),
 // ]
 
-export const clickAudio = new Audio("../assets/clickAudio.wav");
-export const clickAudio1 = new Audio("../assets/clickAudio1.mp3");
-export const purchaseSoundEffect = new Audio("../assets/upgradeSound.mp3");
-export const redeemAudio = new Audio("../assets/redeemAudio.mp3");
+export const clickAudio = new Audio("../assets/clickAudio.wav", import.meta.url);
+export const clickAudio1 = new Audio("../assets/clickAudio1.mp3", import.meta.url);
+export const purchaseSoundEffect = new Audio("../assets/upgradeSound.mp3", import.meta.url);
+export const redeemAudio = new Audio("../assets/redeemAudio.mp3", import.meta.url);
 
 
 export function playsound(sound){
